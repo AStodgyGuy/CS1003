@@ -18,8 +18,8 @@ public class W03PracticalExt1 {
 
         gui.setSize(300,400);
         gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
         fileChooser.setFileFilter(filter);
+        
         openFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
