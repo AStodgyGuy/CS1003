@@ -33,7 +33,8 @@ public class W03PracticalExt1 {
                         ArrayList<Record> al = handler.getRecordArrayList();   
                         TextWriter tw = new TextWriter(al, exportDestination); 
                         System.out.println("Input File: " + path + "\nFile sucessfully exported to " + exportDestination); 
-                    } catch (IndexOutOfBoundsException ex) {
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        System.out.println("Import error; file is not a valid CSV!");
                     }
         
                 }

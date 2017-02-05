@@ -27,8 +27,6 @@ public class CSVHandler {
 
         } catch (IOException e) {
             System.out.println("File not found error!");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Not a valid file!");
         }
     }
 
