@@ -19,19 +19,23 @@ public class W03PracticalExt1 {
         gui.setSize(300,400);
         gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         fileChooser.setFileFilter(filter);
-        
+
         openFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int returnValue = fileChooser.showOpenDialog(gui);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    java.io.File file = fileChooser.getSelectedFile();
-                    String path = file.getAbsolutePath();
-                    String exportDestination = args[0];
-                    CSVHandler handler = new CSVHandler(path);
-                    ArrayList<Record> al = handler.getRecordArrayList();   
-                    TextWriter tw = new TextWriter(al, exportDestination); 
-                    System.out.println("Input File: " + path + "\nFile sucessfully exported to " + exportDestination);         
+                    try {
+                        java.io.File file = fileChooser.getSelectedFile();
+                        String path = file.getAbsolutePath();
+                        String exportDestination = args[0];
+                        CSVHandler handler = new CSVHandler(path);
+                        ArrayList<Record> al = handler.getRecordArrayList();   
+                        TextWriter tw = new TextWriter(al, exportDestination); 
+                        System.out.println("Input File: " + path + "\nFile sucessfully exported to " + exportDestination); 
+                    } catch (IndexOutOfBoundsException ex) {
+                    }
+        
                 }
             }
         });
