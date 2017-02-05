@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 
 public class W03PracticalExt1 {
@@ -13,9 +14,8 @@ public class W03PracticalExt1 {
 
         FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files" , "csv");
         JButton openFileButton = new JButton("Open File");
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(new BorderLayout());
 
-        //make gui look nice
         gui.setSize(300,400);
         gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -31,11 +31,12 @@ public class W03PracticalExt1 {
                     CSVHandler handler = new CSVHandler(path);
                     ArrayList<Record> al = handler.getRecordArrayList();   
                     TextWriter tw = new TextWriter(al, exportDestination); 
-                    System.out.println("File sucessfully exported to " + exportDestination);         
+                    System.out.println("Input File: " + path + "\nFile sucessfully exported to " + exportDestination);         
                 }
             }
         });
-        panel.add(openFileButton);
+
+        panel.add(openFileButton, BorderLayout.CENTER);
         gui.add(panel);
         gui.setVisible(true);
     }
