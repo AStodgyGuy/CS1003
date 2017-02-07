@@ -32,9 +32,9 @@ public class W03PracticalExt1 {
                         CSVHandler handler = new CSVHandler(path);
                         ArrayList<Record> al = handler.getRecordArrayList();   
                         TextWriter tw = new TextWriter(al, exportDestination); 
-                        System.out.println("Input File: " + path + "\nFile sucessfully exported to " + exportDestination); 
+                        JOptionPane.showMessageDialog(null, "File successfully exported to " + exportDestination);
                     } catch (ArrayIndexOutOfBoundsException ex) {
-                        System.out.println("Import error: file is not a valid CSV!");
+                        JOptionPane.showMessageDialog(null, "Not a valid CSV, please choose another file", "Invalid file", JOptionPane.WARNING_MESSAGE);
                     }
         
                 }
@@ -43,6 +43,7 @@ public class W03PracticalExt1 {
 
         panel.add(openFileButton, BorderLayout.CENTER);
         gui.add(panel);
+        gui.setTitle("W03 Practical Extension");
         gui.setVisible(true);
     }
 }
