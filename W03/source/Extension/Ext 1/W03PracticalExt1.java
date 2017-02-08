@@ -7,16 +7,19 @@ import java.util.ArrayList;
 
 public class W03PracticalExt1 {
 
+    private static final int GUI_WIDTH = 300;
+    private static final int GUI_HEIGHT = 400;
+
     public static void main(String[] args) {
 
-        final JFrame gui = new JFrame();
+        final JFrame gui = new JFrame(GUI_WIDTH, GUI_HEIGHT);
         final JFileChooser fileChooser = new JFileChooser();
 
         FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV Files" , "csv");
         JButton openFileButton = new JButton("Open File");
         JPanel panel = new JPanel(new BorderLayout());
 
-        gui.setSize(300,400);
+        gui.setSize();
         gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         fileChooser.setFileFilter(filter);
 
@@ -32,7 +35,7 @@ public class W03PracticalExt1 {
                         CSVHandler handler = new CSVHandler(path);
                         ArrayList<Record> al = handler.getRecordArrayList();   
                         TextWriter tw = new TextWriter(al, exportDestination); 
-                        JOptionPane.showMessageDialog(null, "File successfully exported to " + exportDestination);
+                        JOptionPane.showMessageDialog(null, "File successfully exported to \n" + exportDestination);
                     } catch (ArrayIndexOutOfBoundsException ex) {
                         JOptionPane.showMessageDialog(null, "Not a valid CSV, please choose another file", "Invalid file", JOptionPane.WARNING_MESSAGE);
                     }
