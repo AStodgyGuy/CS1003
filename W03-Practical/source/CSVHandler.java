@@ -6,7 +6,6 @@ import java.util.ArrayList;
 public class CSVHandler {
 
     private ArrayList<Record> al = new ArrayList<Record>();
-    private String line;
     private String[] informationArray;
 
     /*
@@ -17,7 +16,7 @@ public class CSVHandler {
     public CSVHandler(String path) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
-            line = br.readLine();
+            String line = br.readLine();
             while (line != null) {
                     informationArray = line.split(","); //split the line by commas to obtain a string array
                     Record aRecord = new Record(informationArray); //pass the array to the Record class
