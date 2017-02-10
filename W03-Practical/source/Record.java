@@ -18,7 +18,6 @@ public class Record {
     private Double unitPrice;
     private Integer customerID;
     private String country;
-    private boolean isCanceled = false;
 
     //constructor for Record
     public Record(String[] fieldArray) {
@@ -34,12 +33,7 @@ public class Record {
 
     //setters
     private void setInvoiceNumber(String newInvoiceNumber) {
-        if (newInvoiceNumber.startsWith("C")) {
-            isCanceled = true;
-            invoiceNumber = newInvoiceNumber;
-        } else {
-            invoiceNumber = newInvoiceNumber;
-        }
+        invoiceNumber = newInvoiceNumber;
     }
 
     private void setStockCode(String newStockCode) {
