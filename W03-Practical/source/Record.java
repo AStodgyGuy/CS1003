@@ -109,7 +109,4 @@ public class Record {
         return country;
     }
 
-    public boolean getIsCanceled() {
-        return isCanceled;
-    }
 }
