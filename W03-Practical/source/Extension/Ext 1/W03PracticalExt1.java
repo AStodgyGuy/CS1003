@@ -39,7 +39,9 @@ public class W03PracticalExt1 extends JPanel implements ActionListener, Property
                     String path = file.getAbsolutePath();
                     progress += random.nextInt(20);
 
+                    //output to current working directory to a file called output.txt
                     String exportDestination = "output.txt";
+
                     CSVHandler handler = new CSVHandler(path);
                     progress += random.nextInt(20);
 
@@ -96,7 +98,7 @@ public class W03PracticalExt1 extends JPanel implements ActionListener, Property
 
     /*
      * This method creates and displays the GUI
-    */
+     */
     private static void createAndShowGUI() {
 
         JFrame gui = new JFrame("W03PracticalExt1");
@@ -114,7 +116,7 @@ public class W03PracticalExt1 extends JPanel implements ActionListener, Property
 
     /*
      * This constructor constructs the various aspects of the gui
-    */
+     */
     public W03PracticalExt1() {
         super(new BorderLayout());
 
