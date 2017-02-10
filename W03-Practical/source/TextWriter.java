@@ -16,7 +16,7 @@ public class TextWriter {
 
         //A new Hashmap to store the total cost of all the invoices using invoice number as a key
         HashMap<String, Double> hmap = new HashMap<String, Double>();
-
+        
         //initial target invoice number
         String target = al.get(0).getInvoiceNumber();
 
@@ -31,15 +31,23 @@ public class TextWriter {
 
             //loop through every Record in the record ArrayList
             for (int j = 0; j < al.size(); j++) {
-
+                //check if the previous invoice number equals the current invoice number in the arraylist
                 if (target.equals(al.get(j).getInvoiceNumber())) {
-                    target = coreFunctionality(al, j, priceArrayList, exportDestination, out);
+
+                    //write the invoice details to a file
+                    writeInvoiceDetails(al, j, exportDestination, out);
+
+                    //add the price of the invoice line to an arraylist that stores the running total for this invoice number
+                    priceArrayList.add(al.get(j).getUnitPrice() * al.get(j).getQuantity());
+
+                    //set the target invoice number as the current invoice number
+                    target = al.get(j).getInvoiceNumber();
+
+                    //check if this invoice number is the last record in the array
                     checkForLast(al, j, priceArrayList, hmap, exportDestination, out);
 
-                /*
-                    if the target invoice number and the invoice number in the next position of the Record Arraylist do not match,
-                    this is a new invoice number since the data is assumed to be already sorted
-                */
+                //if the target invoice number and the invoice number in the next position of the Record Arraylist do not match,
+                //this is a new invoice number since the data is assumed to be already sorted
                 } else {
 
                     //display the total of the previous prices of the invoice together
@@ -48,7 +56,16 @@ public class TextWriter {
                     //clear the price arraylist
                     priceArrayList.clear();
 
-                    target = coreFunctionality(al, j, priceArrayList, exportDestination, out);
+                    //write the new invoice details to a file
+                    writeInvoiceDetails(al, j, exportDestination, out);
+
+                    //add the price of the invoice line to an arraylist that stores the running total for this invoice number
+                    priceArrayList.add(al.get(j).getUnitPrice() * al.get(j).getQuantity());
+
+                    //set the target invoice number as the current invoice number
+                    target = al.get(j).getInvoiceNumber();
+
+                    //check if this invoice number is the last record in the array
                     checkForLast(al, j, priceArrayList, hmap, exportDestination, out);
                 }
             }
@@ -115,39 +132,27 @@ public class TextWriter {
         String max_invoiceNumber = "";
         String min_invoiceNumber = "";
 
-        double maximum = 0;
+        double maximum = hmap.get(invoiceNumber);
         double minimum = hmap.get(invoiceNumber);
 
         for (String w : hmap.keySet()) {
+            //check if the invoice is canceled or not
             if (!(w.startsWith("C"))) {
                 if (hmap.get(w) > maximum) {
                     maximum = hmap.get(w);
                     max_invoiceNumber = w;
                 }
+                //invoice has got to be greater than 0
                 if (hmap.get(w) > 0 && hmap.get(w) < minimum) {
                     minimum = hmap.get(w);
                     min_invoiceNumber = w;
                 }
             }
         }
+
+        //print the maximum and minimum to the file
         out.println("Minimum priced Invoice Number: " + min_invoiceNumber + " with " + minimum);
         out.println("Maximum priced Invoice Number: " + max_invoiceNumber + " with " + maximum);
-    }
-
-    /*
-        method which sends information to the writeInvoiceDetails method for it to write the formatted text
-        to the output file.
-        Then it multiplies the current record's unit price and quantity to obtain total cost for that particular
-        line in the invoice and adds it to a price array.
-        This method then sends back the current invoice number as the target invoice number.
-    */
-    private String coreFunctionality(ArrayList<Record> al, int j, ArrayList<Double> priceArrayList, String exportDestination, PrintWriter out) {
-
-        writeInvoiceDetails(al, j, exportDestination, out);
-        priceArrayList.add(al.get(j).getUnitPrice() * al.get(j).getQuantity());
-        String target = al.get(j).getInvoiceNumber();
-
-        return target;
     }
 
     /*

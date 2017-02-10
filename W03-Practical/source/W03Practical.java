@@ -24,7 +24,7 @@ public class W03Practical {
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Usage: java W03Practical <input_file> <output_file>");
         } catch (IndexOutOfBoundsException e) {
-		System.out.println("Usage: java W03Practical <input_file> <output_file>");
-	}
+            System.out.println("Usage: java W03Practical <input_file> <output_file>");
+        }
     }
 }

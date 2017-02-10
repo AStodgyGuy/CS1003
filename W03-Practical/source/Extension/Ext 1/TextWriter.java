@@ -16,7 +16,7 @@ public class TextWriter {
 
         //A new Hashmap to store the total cost of all the invoices using invoice number as a key
         HashMap<String, Double> hmap = new HashMap<String, Double>();
-
+        
         //initial target invoice number
         String target = al.get(0).getInvoiceNumber();
 
@@ -39,7 +39,7 @@ public class TextWriter {
 
                     //add the price of the invoice line to an arraylist that stores the running total for this invoice number
                     priceArrayList.add(al.get(j).getUnitPrice() * al.get(j).getQuantity());
-                    
+
                     //set the target invoice number as the current invoice number
                     target = al.get(j).getInvoiceNumber();
 

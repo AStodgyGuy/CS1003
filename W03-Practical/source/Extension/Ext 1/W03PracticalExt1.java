@@ -20,6 +20,9 @@ public class W03PracticalExt1 extends JPanel implements ActionListener, Property
     private JFileChooser fileChooser; 
     private Task task;
 
+    /*
+     * A class that handles the functionality of the program
+     */
     class Task extends SwingWorker<Void, Void> {
         int progress = 0;
         @Override
@@ -28,20 +31,29 @@ public class W03PracticalExt1 extends JPanel implements ActionListener, Property
             setProgress(0);
             while (progress < 100) {
                 try {
+                    //whilst each part of the program is being executed a different integer variable from
+                    //0 to 20 is generated to increase the progress bar
                     java.io.File file = fileChooser.getSelectedFile();
                     progress += random.nextInt(20);
+
                     String path = file.getAbsolutePath();
                     progress += random.nextInt(20);
+
                     String exportDestination = "output.txt";
                     CSVHandler handler = new CSVHandler(path);
                     progress += random.nextInt(20);
+
                     ArrayList<Record> al = handler.getRecordArrayList();
                     progress += random.nextInt(20);
+
                     TextWriter tw = new TextWriter(al, exportDestination);
                     setProgress(Math.min(progress, 100));
-                    if (progress > 100 ) {
+                    
+                    if (progress >= 100 ) {
+                        //once progress has reached 100 or above, display message to the user
                         JOptionPane.showMessageDialog(null, "File successfully exported to \n" + exportDestination);
                     }
+                //if the user inputs an invalid file an exception is generated and a message is displayed to the user
                 } catch (ArrayIndexOutOfBoundsException ex) {
                     JOptionPane.showMessageDialog(null, "Not a valid CSV, please choose another file", "Invalid file", JOptionPane.WARNING_MESSAGE);
                     break;
@@ -50,11 +62,18 @@ public class W03PracticalExt1 extends JPanel implements ActionListener, Property
             return null;
         }
 
+        /*
+         * Once the background process is finished, this method executes which provides information
+         * on the JTextArea.
+         */
         @Override
         public void done() {
             if (progress > 100) {
+                //change the cursor from loading to normal
                 setCursor(null);
+                //re-enabling open file button
                 openFileButton.setEnabled(true);
+                //output feedback to user
                 taskOutput.append("Process Complete\n");
             } else {
                 setCursor(null);
@@ -64,6 +83,9 @@ public class W03PracticalExt1 extends JPanel implements ActionListener, Property
         }
     }
 
+    /*
+     * Create a runnable object that intializes the GUI
+     */
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -90,6 +112,9 @@ public class W03PracticalExt1 extends JPanel implements ActionListener, Property
         gui.setVisible(true);
     }
 
+    /*
+     * This constructor constructs the various aspects of the gui
+    */
     public W03PracticalExt1() {
         super(new BorderLayout());
 
@@ -116,33 +141,47 @@ public class W03PracticalExt1 extends JPanel implements ActionListener, Property
         //create jlbael for progress bar
         progressBarText = new JLabel("Progress Bar");
 
+        //create jpanel to put everything on
         JPanel panel = new JPanel();
         panel.add(progressBarText);
         panel.add(progressBar);
         panel.add(openFileButton);
-        
+
+        //add the panel to the gui
         add(panel, BorderLayout.PAGE_START);
+        //add the scroll panel to the gui
         add(new JScrollPane(taskOutput), BorderLayout.CENTER);
+        //create borders around the panel
         setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
 
     }
 
+    /*
+     * This method detects the action event the user performs and launches the task
+     */
     public void actionPerformed(ActionEvent event) {        
         if (event.getSource() == openFileButton) {
+            //disable the open file button so that no more files can be input into the program
             openFileButton.setEnabled(false);
             int returnValue = fileChooser.showOpenDialog(this);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 task = new Task();
                 task.addPropertyChangeListener(this);
+                //set the cursor to the loading Cursor
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                //launch the task
                 task.execute();
             }
         }
     }
 
+    /*
+     * This method displays the status in the JText area and provides status feedback to the user
+     */
     public void propertyChange(PropertyChangeEvent evt) {
         if ("progress".equals(evt.getPropertyName())) {
-            progressBar.setValue((Integer)evt.getNewValue());
+            progressBar.setValue( (Integer) evt.getNewValue());
+            //formatted output to show percentage
             taskOutput.append(String.format("Completed %d%% of task.\n", task.getProgress()));
         }
     }
