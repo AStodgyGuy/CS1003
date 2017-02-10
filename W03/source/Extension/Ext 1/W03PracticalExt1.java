@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.util.ArrayList;
 import java.util.Random;
-import java.lang.Thread;
 
 public class W03PracticalExt1 extends JPanel implements ActionListener, PropertyChangeListener {
 
