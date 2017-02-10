@@ -40,9 +40,6 @@ public class TextWriter {
                     //add the price of the invoice line to an arraylist that stores the running total for this invoice number
                     invoiceNoTotal += al.get(j).getUnitPrice() * al.get(j).getQuantity();
 
-                    //set the target invoice number as the current invoice number
-                    target = al.get(j).getInvoiceNumber();
-
                     //check if this invoice number is the last record in the array
                     checkForLast(al, j, invoiceNoTotal, hmap, exportDestination, out);
 
