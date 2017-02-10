@@ -115,7 +115,7 @@ public class TextWriter {
         String max_invoiceNumber = "";
         String min_invoiceNumber = "";
 
-        double maximum = 0;
+        double maximum = hmap.get(invoiceNumber);
         double minimum = hmap.get(invoiceNumber);
 
         for (String w : hmap.keySet()) {
