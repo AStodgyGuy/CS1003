@@ -1,5 +1,9 @@
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.HashMap;
+
 
 public class WordAnalyser {
 
@@ -13,12 +17,35 @@ public class WordAnalyser {
             NgramCounter nc = new NgramCounter(path);
 
             //obtain the hashmap from ngram counter
-            HashMap hm = nc.getHashmap();
+            HashMap<String, Integer> hm = nc.getHashmap();
 
+            //write the contents of the hashmap as a csv
+            writeFile(hm, args[1]);
+
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Invalid use: Java WordAnalyser <input file> <output file>")
         }
-        //pass in the file
-        //run the ngram counter
-        //output the file
+    }
+
+    public static writeFile(HashMap<String, Integer> hm, String exportPath) {
+
+        try {
+
+            FileWriter fw = new FileWriter(exportPath);
+            BufferedWriter bw = new BufferedWrier(fw);
+            PrintWriter pw = new PrintWriter(bw);
+
+            //for every string in the hashmap out the string and its corresponding value
+            for (String w : hm.keySet()) {
+                pw.println(\"" + w + "\"," + hm.get(w));
+            }
+
+            //close the file
+            pw.close();
+
+        } catch (IOException e) {
+            System.out.println("Unable to create new file");
+        }
 
     }
 }
