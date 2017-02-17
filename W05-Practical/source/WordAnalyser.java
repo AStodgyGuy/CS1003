@@ -14,30 +14,32 @@ public class WordAnalyser {
             String path = args[0];
 
             //new NgramCounter to find the number of ngrams
-            NgramCounter nc = new NgramCounter(path);
+            NgramCount nc = new NgramCount(path);
 
             //obtain the hashmap from ngram counter
-            HashMap<String, Integer> hm = nc.getHashmap();
+            HashMap<String, Integer> hm = nc.getHashMap();
 
             //write the contents of the hashmap as a csv
             writeFile(hm, args[1]);
 
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Invalid use: Java WordAnalyser <input file> <output file>")
+            System.out.println("Invalid use: Java WordAnalyser <input file> <output file>");
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Invalid use: Java WordAnalyser <input file> <output file>");
         }
     }
 
-    public static writeFile(HashMap<String, Integer> hm, String exportPath) {
+    public static void writeFile(HashMap<String, Integer> hm, String exportPath) {
 
         try {
 
             FileWriter fw = new FileWriter(exportPath);
-            BufferedWriter bw = new BufferedWrier(fw);
+            BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter pw = new PrintWriter(bw);
 
             //for every string in the hashmap out the string and its corresponding value
             for (String w : hm.keySet()) {
-                pw.println(\"" + w + "\"," + hm.get(w));
+                pw.println("\"" + w + "\"," + hm.get(w));
             }
 
             //close the file
@@ -46,6 +48,6 @@ public class WordAnalyser {
         } catch (IOException e) {
             System.out.println("Unable to create new file");
         }
-
     }
+
 }
