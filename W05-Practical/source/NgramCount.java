@@ -1,60 +1,62 @@
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-
 public class NgramCount {
 
+    private final int TRIGRAM_SIZE = 3;
+
+    private Ngram anNgram;
     private HashMap<String, Integer> hm = new HashMap<String, Integer>();
-    private int TRIGRAM_COUNT = 3;
+    private ArrayList<String> al = new ArrayList<String>();
 
     public NgramCount(String path) {
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(path));
-            String trigram_expression = "";
             String[] lineArray;
-            int counter = 0;
 
             String line = br.readLine();
-            line.toLowerCase(); //change the line to lower case letters            
-            line.replaceAll("[a-z]", ""); //change all the non a-z characters to ""
             while (line != null) {
+                line = line.toLowerCase(); //change the line to lower case letters
+                line = line.replaceAll("[^a-z ]", ""); //change all the non a-z characters to ""
                 lineArray = line.split(" "); //split up the line to individual words split by spaces
-                for (int i = 0; i < lineArray.length; i++) {
-
-                    //add the first word of the trigram expression into a string variable 
-                    if (counter == 0) {
-                        trigram_expression = trigram_expression + lineArray[i];
-                    //add the second and third word with a space
-                    } else {
-                        trigram_expression = trigram_expression + " " + lineArray[i];
-                    }
-
-                    //once equal to the trigram count, check if the trigram already exists in the hasmap
-                    if (counter == TRIGRAM_COUNT) {
-                        Integer value = hm.get(trigram_expression);
-
-                        //if it doesn't add it to the hashmap
-                        if (value == null) {
-                            hm.put(trigram_expression, 1);
-                        //if it does, increment the hashmap value of that key by one
-                        //hashmaps must overwrite
+                //check the line to make sure its not empty
+                if (!line.isEmpty()) {
+                    for (int i = 0; i < lineArray.length; i++) {
+                        //check if the arraylist size is the size of the required trigram
+                        if (al.size() == TRIGRAM_SIZE) {
+                            anNgram = new Ngram(al); //create a new trigram
+                            addToHashmap(hm, anNgram); //add it to the hashmap
+                            al.remove(0);   //remove the first element of the arraylist to make another trigram
+                            al.add(lineArray[i]);   //add current string in array to the arraylist
                         } else {
-                            hm.put(trigram_expression, hm.get(trigram_expression) + 1);
+                            al.add(lineArray[i]);
                         }
-
-                        //reset the trigram expression and counter
-                        trigram_expression = "";
-                        counter = 0;
                     }
                 }
-
                 //read the next line
-                br.readLine();
+                line = br.readLine();
             }
+            
+            //close the BufferedReader
+            br.close(); 
 
+            //printing out last trigram
+            if (al.size() == TRIGRAM_SIZE) {
+                anNgram = new Ngram(al);
+                addToHashmap(hm, anNgram);
+            }
+              
         } catch (IOException e) {
             System.out.println("File not found error!");
         }
@@ -62,5 +64,21 @@ public class NgramCount {
 
     public HashMap<String, Integer> getHashMap() {
         return hm;
-    } 
+    }
+
+    /*
+     * Method which adds the ngram identifier to a hashmap to check for occurences
+    */
+    private void addToHashmap(HashMap<String, Integer> hm, Ngram anNgram) {
+
+        Integer value = hm.get(anNgram.getIdentifier());
+        //if it doesn't add it to the hashmap
+        if (value == null) {
+            hm.put(anNgram.getIdentifier(), 1);
+        //if it does, increment the hashmap value of that key by one
+        //hashmaps must overwrite
+        } else {
+            hm.put(anNgram.getIdentifier(), hm.get(anNgram.getIdentifier()) + 1);
+        }
+    }
 }

@@ -24,13 +24,16 @@ public class WordAnalyser {
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Invalid use: Java WordAnalyser <input file> <output file>");
+            e.printStackTrace();
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Invalid use: Java WordAnalyser <input file> <output file>");
         }
     }
 
+    /*
+     * Method which writes the contents of the hashmap to a user specified file
+    */
     public static void writeFile(HashMap<String, Integer> hm, String exportPath) {
-
         try {
 
             FileWriter fw = new FileWriter(exportPath);
