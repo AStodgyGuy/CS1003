@@ -3,6 +3,11 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Map.Entry;
 
 
 public class WordAnalyser {
@@ -19,8 +24,12 @@ public class WordAnalyser {
             //obtain the hashmap from ngram counter
             HashMap<String, Integer> hm = nc.getHashMap();
 
+            //sort the hashmap
+            //LinkedHashMap<String, Integer> sortedHashMap = sortHashMap(hm);
+            LinkedHashMap<String, Integer> sortedHashMap = sortHashMap(hm);
+
             //write the contents of the hashmap as a csv
-            writeFile(hm, args[1]);
+            writeFile(sortedHashMap, args[1]);
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Invalid use: Java WordAnalyser <input file> <output file>");
@@ -30,10 +39,23 @@ public class WordAnalyser {
         }
     }
 
+    public static LinkedHashMap<String, Integer> sortHashMap(HashMap<String, Integer> hm) {
+        return hm.entrySet()
+             .stream()
+             .sorted(Map.Entry.<String, Integer>comparingByValue().reversed()
+                .thenComparing(Map.Entry.comparingByKey()))
+             .collect(Collectors.toMap(
+               Map.Entry::getKey,
+               Map.Entry::getValue,
+               (e1, e2) -> e1,
+               LinkedHashMap::new
+             ));
+    }
+
     /*
      * Method which writes the contents of the hashmap to a user specified file
     */
-    public static void writeFile(HashMap<String, Integer> hm, String exportPath) {
+    public static void writeFile(LinkedHashMap<String, Integer> sortedHashMap, String exportPath) {
         try {
 
             FileWriter fw = new FileWriter(exportPath);
@@ -41,8 +63,8 @@ public class WordAnalyser {
             PrintWriter pw = new PrintWriter(bw);
 
             //for every string in the hashmap out the string and its corresponding value
-            for (String w : hm.keySet()) {
-                pw.println("\"" + w + "\"," + hm.get(w));
+            for (String w : sortedHashMap.keySet()) {
+                pw.println("\"" + w + "\"," + sortedHashMap.get(w));
             }
 
             //close the file
