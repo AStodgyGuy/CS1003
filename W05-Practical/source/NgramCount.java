@@ -78,7 +78,7 @@ public class NgramCount {
     }
 
     /*
-     * class for NGRAMS
+     * class for Ngrams
     */
     class Ngram {
 
