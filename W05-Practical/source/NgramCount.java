@@ -27,13 +27,15 @@ public class NgramCount {
                 if (!line.isEmpty()) {
                     for (int i = 0; i < lineArray.length; i++) {
                         //check if the arraylist size is the size of the required trigram
-                        if (al.size() == TRIGRAM_SIZE) {
-                            anNgram = new Ngram(al); //create a new trigram
-                            addToHashmap(hm, anNgram); //add it to the hashmap
-                            al.remove(0);   //remove the first element of the arraylist to make another trigram
-                            al.add(lineArray[i]);   //add current string in array to the arraylist
-                        } else {
-                            al.add(lineArray[i]);
+                        if (!(lineArray[i].equals(" ") || lineArray[i].equals(""))) {
+                            if (al.size() == TRIGRAM_SIZE) {
+                                anNgram = new Ngram(al); //create a new trigram
+                                addToHashmap(hm, anNgram); //add it to the hashmap
+                                al.remove(0);   //remove the first element of the arraylist to make another trigram
+                                al.add(lineArray[i]);   //add current string in array to the arraylist
+                            } else {
+                                al.add(lineArray[i]);
+                            }
                         }
                     }
                 }
@@ -74,7 +76,10 @@ public class NgramCount {
             hm.put(anNgram.getIdentifier(), hm.get(anNgram.getIdentifier()) + 1);
         }
     }
-    
+
+    /*
+     * class for NGRAMS
+    */
     class Ngram {
 
     private final int FIRST_STRING = 0;
