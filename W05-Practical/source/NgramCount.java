@@ -1,4 +1,4 @@
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.io.FileReader;
 import java.io.BufferedReader;
@@ -9,7 +9,7 @@ public class NgramCount {
     private static final int TRIGRAM_SIZE = 3;
 
     private Ngram anNgram;
-    private HashMap<String, Integer> hm = new HashMap<String, Integer>();
+    private LinkedHashMap<String, Integer> hm = new LinkedHashMap<String, Integer>();
     private ArrayList<String> al = new ArrayList<String>();
 
     public NgramCount(String path) {
@@ -43,7 +43,7 @@ public class NgramCount {
                 //read the next line
                 line = br.readLine();
             }
-            
+
             //close the BufferedReader
             br.close();
 
@@ -58,24 +58,15 @@ public class NgramCount {
         }
     }
 
-    public HashMap<String, Integer> getHashMap() {
+    public LinkedHashMap<String, Integer> getHashMap() {
         return hm;
     }
 
     /*
      * Method which adds the ngram identifier to a hashmap to check for occurences
     */
-    private void addToHashmap(HashMap<String, Integer> hm, Ngram anNgram) {
-
-        Integer value = hm.get(anNgram.getIdentifier());
-        //if it doesn't add it to the hashmap
-        if (value == null) {
-            hm.put(anNgram.getIdentifier(), 1);
-        //if it does, increment the hashmap value of that key by one
-        //hashmaps must overwrite
-        } else {
-            hm.put(anNgram.getIdentifier(), hm.get(anNgram.getIdentifier()) + 1);
-        }
+    private void addToHashmap(LinkedHashMap<String, Integer> hm, Ngram anNgram) {
+        hm.put(anNgram.getIdentifier(), anNgram.incrememntCount());
     }
 
     /*
@@ -88,6 +79,7 @@ public class NgramCount {
     private static final int THIRD_STRING = 2;
 
     private String identifier;
+    private int count = 0;
 
         private Ngram(ArrayList<String> al) {
             this.identifier = al.get(FIRST_STRING) + " " + al.get(SECOND_STRING) + " " + al.get(THIRD_STRING);
@@ -95,6 +87,10 @@ public class NgramCount {
 
         public String getIdentifier() {
             return identifier;
+        }
+
+        public int incrememntCount() {
+            return ++count;
         }
     }
 }

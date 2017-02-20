@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,15 +19,14 @@ public class WordAnalyser {
             NgramCount nc = new NgramCount(path);
 
             //obtain the hashmap from ngram counter
-            HashMap<String, Integer> hm = nc.getHashMap();
+            LinkedHashMap<String, Integer> hm = nc.getHashMap();
 
 
             //sort the hashmap
-            //LinkedHashMap<String, Integer> sortedHashMap = sortHashMap(hm);
-            LinkedHashMap<String, Integer> sortedHashMap = sortHashMap(hm);
+            hm = sortHashMap(hm);
 
             //write the contents of the hashmap as a csv
-            writeFile(sortedHashMap, args[1]);
+            writeFile(hm, args[1]);
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Invalid use: Java WordAnalyser <input file> <output file>");
@@ -38,7 +36,7 @@ public class WordAnalyser {
         }
     }
 
-    public static LinkedHashMap<String, Integer> sortHashMap(HashMap<String, Integer> hm) {
+    public static LinkedHashMap<String, Integer> sortHashMap(LinkedHashMap<String, Integer> hm) {
         return hm.entrySet()
              .stream()
              .sorted(Map.Entry.<String, Integer>comparingByValue().reversed()
