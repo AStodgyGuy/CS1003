@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import org.jfree.ui.RefineryUtilities;
+import java.util.ArrayList;
 
 public class WordAnalyser {
 
@@ -24,14 +26,22 @@ public class WordAnalyser {
             //sort the hashmap
             hm = sortHashMap(hm);
 
-            //write the contents of the hashmap as a csv
-            writeFile(hm, args[1]);
+            //Generate graph that shows Zipf's law
+            ArrayList<Integer> al = new ArrayList<Integer>(hm.values());
+            GraphPlotter gp = new GraphPlotter(al, path);
+
+            //pack all the graph components together
+            gp.pack();
+
+            //display the graph on the centre of the screen
+            RefineryUtilities.centerFrameOnScreen(gp);
+            gp.setVisible(true);
 
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Invalid use: Java WordAnalyser <input file> <output file>");
+            System.out.println("Invalid use: Java WordAnalyser <input file>");
             e.printStackTrace();
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Invalid use: Java WordAnalyser <input file> <output file>");
+            System.out.println("Invalid use: Java WordAnalyser <input file>");
         }
     }
 
@@ -50,27 +60,5 @@ public class WordAnalyser {
                LinkedHashMap::new
              ));
     }
-
-    /*
-     * Method which writes the contents of the hashmap to a user specified file
-    */
-    public static void writeFile(LinkedHashMap<String, Integer> sortedHashMap, String exportPath) {
-        try {
-
-            FileWriter fw = new FileWriter(exportPath);
-            BufferedWriter bw = new BufferedWriter(fw);
-            PrintWriter pw = new PrintWriter(bw);
-
-            //for every string in the hashmap out the string and its corresponding value
-            for (String w : sortedHashMap.keySet()) {
-                pw.println("\"" + w + "\"," + sortedHashMap.get(w));
-            }
-
-            //close the file
-            pw.close();
-
-        } catch (IOException e) {
-            System.out.println("Unable to create new file");
-        }
-    }
 }
+
