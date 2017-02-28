@@ -25,9 +25,15 @@ public class NgramCount {
 
             String line = br.readLine();
             while (line != null) {
-                line = line.toLowerCase(); //change the line to lower case letters
-                line = line.replaceAll("[^a-z ]", ""); //change all the non a-z characters to ""
-                lineArray = line.split(" "); //split up the line to individual words split by spaces
+                //change the line to lower case letters
+                line = line.toLowerCase();
+
+                //change all the non a-z characters to ""
+                line = line.replaceAll("[^a-z ]", "");
+
+                //split up the line to individual words split by spaces
+                lineArray = line.split(" ");
+
                 //check the line to make sure its not empty
                 if (!line.isEmpty()) {
                     for (int i = 0; i < lineArray.length; i++) {
@@ -36,9 +42,12 @@ public class NgramCount {
                             //check if the arraylist size is the size of the required trigram
                             if (al.size() == TRIGRAM_SIZE) {
                                 trigramExpression = al.get(FIRST_STRING) + " " + al.get(SECOND_STRING) + " " + al.get(THIRD_STRING);
-                                addToHashmap(hm, trigramExpression); //add it to the hashmap
-                                al.remove(FIRST_STRING);   //remove the first element of the arraylist to make another trigram since arrayLists dyamically update
-                                al.add(lineArray[i]);   //add current string in array to the arraylist
+                                //add trigram expression to the hashmap
+                                addToHashmap(hm, trigramExpression);
+                                 //remove the first element of the arraylist to make another trigram since arrayLists dyamically update
+                                al.remove(FIRST_STRING);
+                                //add current string in array to the arraylist
+                                al.add(lineArray[i]);
                             } else {
                                 al.add(lineArray[i]);
                             }
@@ -52,10 +61,10 @@ public class NgramCount {
             //close the BufferedReader
             br.close();
 
-            //printing out last trigram
+            //adding last trigram to the hashmap
             if (al.size() == TRIGRAM_SIZE) {
                 trigramExpression = al.get(FIRST_STRING) + " " + al.get(SECOND_STRING) + " " + al.get(THIRD_STRING);
-                addToHashmap(hm, trigramExpression); //add it to the hashmap
+                addToHashmap(hm, trigramExpression);
             }
 
         } catch (IOException e) {
