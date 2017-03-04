@@ -17,9 +17,12 @@ public class NgramCount {
 
             String line = br.readLine();
             while (line != null) {
-                line = line.toLowerCase(); //change the line to lower case letters
-                line = line.replaceAll("[^a-z ]", ""); //change all the non a-z characters to ""
-                lineArray = line.split(" "); //split up the line to individual words split by spaces
+                //change the line to lower case letters
+                line = line.toLowerCase();
+                //change all the non a-z characters to ""
+                line = line.replaceAll("[^a-z ]", "");
+                //split up the line to individual words split by spaces
+                lineArray = line.split(" ");
                 //check the line to make sure its not empty
                 if (!line.isEmpty()) {
                     for (int i = 0; i < lineArray.length; i++) {

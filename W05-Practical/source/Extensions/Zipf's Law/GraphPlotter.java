@@ -22,11 +22,11 @@ public class GraphPlotter extends ApplicationFrame{
     public GraphPlotter(ArrayList<Integer> al, String fileName) {
         super("Zipf's Distribution Law");
         JFreeChart xylineChart = ChartFactory.createXYLineChart(
-            "Zipf's Law" ,
-            "Rank" ,
-            "Frequency" ,
-            createDataSet(al, fileName) ,
-            PlotOrientation.VERTICAL ,
+            "Zipf's Law",
+            "Rank",
+            "Frequency",
+            createDataSet(al, fileName),
+            PlotOrientation.VERTICAL,
             true, true, false
         );
 

@@ -2,12 +2,12 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.jfree.ui.RefineryUtilities;
-import java.util.ArrayList;
 
 public class WordAnalyser {
 
@@ -26,6 +26,9 @@ public class WordAnalyser {
             //sort the hashmap
             hm = sortHashMap(hm);
 
+            //write the file
+            writeFile(hm, args[1]);
+
             //Generate graph that shows Zipf's law
             ArrayList<Integer> al = new ArrayList<Integer>(hm.values());
             GraphPlotter gp = new GraphPlotter(al, path);
@@ -39,7 +42,6 @@ public class WordAnalyser {
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Invalid use: Java WordAnalyser <input file>");
-            e.printStackTrace();
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Invalid use: Java WordAnalyser <input file>");
         }
@@ -59,6 +61,26 @@ public class WordAnalyser {
                (e1, e2) -> e1,
                LinkedHashMap::new
              ));
+    }
+
+    public static void writeFile(LinkedHashMap<String, Integer> sortedHashMap, String exportPath) {
+        try {
+
+            FileWriter fw = new FileWriter(exportPath);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter pw = new PrintWriter(bw);
+
+            //for every string in the hashmap out the string and its corresponding value
+            for (String w : sortedHashMap.keySet()) {
+                pw.println("\"" + w + "\"," + sortedHashMap.get(w));
+            }
+
+            //close the file
+            pw.close();
+
+        } catch (IOException e) {
+            System.out.println("Unable to create new file");
+        }
     }
 }
 

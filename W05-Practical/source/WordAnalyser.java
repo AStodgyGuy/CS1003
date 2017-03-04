@@ -29,7 +29,6 @@ public class WordAnalyser {
 
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Invalid use: Java WordAnalyser <input file> <output file>");
-            e.printStackTrace();
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Invalid use: Java WordAnalyser <input file> <output file>");
         }
