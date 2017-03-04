@@ -10,17 +10,21 @@ public class PropertyLoader {
 	private String userName;
 	private String password;
 
+    //constructor for PropertyLoader
     public PropertyLoader(String propertiesFileName) throws IOException {
+        //load the property file
         FileInputStream propInputStream = new FileInputStream(propertiesFileName);
         properties = new Properties();
         properties.load(propInputStream);
         propInputStream.close();
 
-        this.setURL();
-        this.setUserName();
-        this.setPassword();
+        //set the fields
+        setURL();
+        setUserName();
+        setPassword();
     }
 
+    //method which sets the connection url, code is adapted from studres
     private void setURL() throws IOException {
 
         String type = properties.getProperty("type");
@@ -31,23 +35,28 @@ public class PropertyLoader {
         this.dbURL = "jdbc:" + type + "://" + host + ":" + port + "/" + db;
     }
 
+    //method which sets the username for the connection, code is adapted from studres
     private void setUserName() throws IOException {
         this.userName = properties.getProperty("username");
     }
 
-    private void setPassWord() throws IOException {
+    //method which sets the password for the connection, code is adapted from studres
+    private void setPassword() throws IOException {
         this.password = properties.getProperty("password");
     }
 
+    //method which returns database url
     public String getDBUrl() {
         return dbURL;
     }
 
-    private String getUserName() {
+    //method which returns username
+    public String getUserName() {
         return userName;
     }
 
-    private String getPassword() {
+    //method which returns password
+    public String getPassword() {
         return password;
     }	
 }

@@ -1,73 +1,98 @@
-import java.sql.*;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class W07Practical {
-
-	private static Connection JDBC_CONNECTION = null;
-	private static int PROPERTIES_PATH = 0;
-	private static int CSV_PATH = 1;
-	private static int ACTION_TAKEN = 2;
 	
-	public static void main(String[] args) throws SQLException{
+	private static Connection JDBC_CONNECTION = null;
+	private static final int PROPERTIES_PATH = 0;
+	private static final int CSV_PATH = 1;
+	private static final int ACTION_TAKEN = 2;
+	private static final int NUMBER_OF_ARGS = 3;
 
-		//args[0] should represent the path of the database.properties file.
-		//args[1] should represent the path to the data file where your program will read the data
-		//args[2] should specify the action taken by your program
-		
-		//read properties file args[0]
-		//load data into database args[1]
-		//specify action taken by your program args[2]
+	public static void main(String[] args) throws SQLException {
 
-		//query 1 = list all the records in the database
-		//query 2 = print out the total number of invoices in the database
-		//query 3 = list the invoice number and total price for each invoice
-		//query 4 = print the invoice number and total price for the invoice with the highest total price
-
-		/*
-		if (args.length != 3) {
+		//check that the length of args is correct
+		if (args.length != NUMBER_OF_ARGS) {
 			System.out.println("Usage: java W07Practical <properties_file_name> <data_file> <sql_query>");
 			System.exit(0);
 		}
-		*/
-
+		
 		W07Practical myDB = new W07Practical();
 		myDB.tryToAccessDB(args[PROPERTIES_PATH]);
 
-		//CSVLoader loader = CSVLoader(JDBC_CONNECTION);
+		//switch action to be taken
+		try {
+			switch (args[ACTION_TAKEN]) {
+				case "create":
+					createTable(JDBC_CONNECTION);
+					CSVLoader loader = new CSVLoader(JDBC_CONNECTION, args[CSV_PATH]);
+					loader.loadCSVData();
+					System.out.println("OK");
+					break;
+				case "query1":
+					//list all the records in the database
+					PrintWriter pw = new PrintWriter(JDBC_CONNECTION);
+					pw.printAllRecords();
+					break;
+				case "query2":
+					//print out the total number of invoices in the database
+					PrintWriter pw = new PrintWriter(JDBC_CONNECTION);
+					pw.printNoOfInvoices();
+					break;
+				case "query3":
+					//list the invoice number and total price for each invoice
+					PrintWriter pw = new PrintWriter(JDBC_CONNECTION);
+					pw.printInvoiceNoAndTotalPrice();
+					break;
+				case "query4":
+					//print the invoice number and total price for the invoice with the highest total price
+					PrintWriter pw = new PrintWriter(JDBC_CONNECTION);
+					pw.printOutHighestInvoice();
+					break;
+				default:
+					System.out.println("Usage: java W07Practical <properties_file_name> <data_file> <sql_query>");
+			}
 
+		} catch (IOException e) {
+			System.out.println("Usage: java W07Practical <properties_file_name> <data_file> <sql_query>");
+			e.printStackTrace();
+		} catch (SQLException e) {
+			System.out.println("Usage: java W07Practical <properties_file_name> <data_file> <sql_query>");
+			e.printStackTrace();
+		}
+		
 	}
 
-	private void tryToAccessDB(String propertiesLocation) throws SQLException {
+	//method which tries to connect to a database, code adapted from studres
+	private static void tryToAccessDB(String propertiesLocation) throws SQLException {
 		Connection connection = null;
 		try {
 			PropertyLoader pl = new PropertyLoader(propertiesLocation);
 			connection = DriverManager.getConnection(pl.getDBUrl(), pl.getUserName(), pl.getPassword());
-
-			createTable(connection);
-			System.out.println("success");
+			JDBC_CONNECTION = connection;
 
 		} catch (IOException e) {
+			System.out.println("Usage: java W07Practical <properties_file_name> <data_file> <sql_query>");
 			e.printStackTrace();
 		} catch (SQLException e) {
+			System.out.println("Usage: java W07Practical <properties_file_name> <data_file> <sql_query>");
 			e.printStackTrace();
-		} finally {
-			if (connection != null) {
-				setConnection(connection);
-				System.out.println("ayo");
-			}
 		}
 	}
 
-	private void setConnection(Connection connection) throws SQLException {
-		this.JDBC_CONNECTION = connection;
-	}
-
-	private void createTable(Connection connection) throws SQLException {
+	//method which creates the table to store the csv, code adapted from studres
+	private static void createTable(Connection connection) throws SQLException {
 
 		Statement statement = connection.createStatement();
 		statement.executeUpdate("DROP TABLE IF EXISTS data");
 
-		String tableCreation = "CREATE TABLE data (InvoiceNo int, StockCode varchar(10), Description varchar(50)," +
-								"Quantity int, InvoiceDate varchar(10), UnitPrice decimal, CustomerID int, Country varchar(50)";
+		String tableCreation = "CREATE TABLE data (InvoiceNo varchar(10), StockCode varchar(10), Description varchar(50)," +
+								"Quantity varchar(10), InvoiceDate varchar(25), UnitPrice varchar(10), CustomerID varchar(10), Country varchar(50))";
 
 		statement.executeUpdate(tableCreation);
 		statement.close();
