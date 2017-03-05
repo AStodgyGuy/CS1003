@@ -7,8 +7,8 @@ public class PropertyLoader {
     private Properties properties;
 
     private String dbURL;
-	private String userName;
-	private String password;
+    private String userName;
+    private String password;
 
     //constructor for PropertyLoader
     public PropertyLoader(String propertiesFileName) throws IOException {
@@ -28,10 +28,9 @@ public class PropertyLoader {
     private void setURL() throws IOException {
 
         String type = properties.getProperty("type");
-		String host = properties.getProperty("host");
-		String port = properties.getProperty("port");
-		String db = properties.getProperty("db");
-
+        String host = properties.getProperty("host");
+        String port = properties.getProperty("port");
+        String db = properties.getProperty("db");
         this.dbURL = "jdbc:" + type + "://" + host + ":" + port + "/" + db;
     }
 
@@ -58,5 +57,5 @@ public class PropertyLoader {
     //method which returns password
     public String getPassword() {
         return password;
-    }	
+    }
 }

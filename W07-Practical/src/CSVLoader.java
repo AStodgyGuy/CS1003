@@ -7,8 +7,8 @@ import java.sql.PreparedStatement;
 
 public class CSVLoader {
 
-    private Connection connection;
-    private String filePath;
+    private static Connection connection;
+    private static String filePath;
 
 
     //constructor for csv loader
@@ -17,10 +17,12 @@ public class CSVLoader {
         this.filePath = filePath;
     }
 
+    //method to load csv into data table
     public void loadCSVData() throws IOException, SQLException {
+        //SQL statement to load csv information into data table
         String insertvaluesSQL = "INSERT INTO data"
-		+ "(InvoiceNo, StockCode, Description, Quantity, InvoiceDate, UnitPrice, CustomerID, Country)"
-		+ " VALUES (?,?,?,?,?,?,?,?)";
+        + "(InvoiceNo, StockCode, Description, Quantity, InvoiceDate, UnitPrice, CustomerID, Country)"
+        + " VALUES (?,?,?,?,?,?,?,?)";
 
         //code to read csv file taken from W03 practical
          BufferedReader br = new BufferedReader(new FileReader(filePath));
@@ -29,6 +31,7 @@ public class CSVLoader {
             while (line != null) {
                 informationArray = line.split(",");
                 PreparedStatement preparedStatement = connection.prepareStatement(insertvaluesSQL);
+                //Strings are used in order to support the column headers in the first tuple
                 preparedStatement.setString(1, informationArray[0]);
                 preparedStatement.setString(2, informationArray[1]);
                 preparedStatement.setString(3, informationArray[2]);
