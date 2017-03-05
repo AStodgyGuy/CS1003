@@ -1,8 +1,6 @@
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -21,13 +19,11 @@ public class W07Practical {
 			System.out.println("Usage: java -cp <mariadb-client.jar>:. W07Practical <DB_properties_file> <input_file> <action>");
 			System.exit(0);
 		}
-
-		W07Practical myDB = new W07Practical();
-		myDB.tryToAccessDB(args[PROPERTIES_PATH]);
-		PrintWriter pw = new PrintWriter(JDBC_CONNECTION);
-
 		//switch action to be taken
 		try {
+			W07Practical myDB = new W07Practical();
+			myDB.tryToAccessDB(args[PROPERTIES_PATH]);
+			PrintWriter pw = new PrintWriter(JDBC_CONNECTION);
 			switch (args[ACTION_TAKEN]) {
 				case "create":
 					//create the table
