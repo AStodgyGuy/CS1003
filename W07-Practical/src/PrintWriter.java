@@ -17,6 +17,7 @@ public class PrintWriter {
         String query = "SELECT * FROM data";
         statement = connection.createStatement();
         ResultSet rs = statement.executeQuery(query);
+        //boolean flag used to print out the first line
         boolean flag = true;
         while (rs.next()) {
             if (flag) {
@@ -32,7 +33,9 @@ public class PrintWriter {
                                 + quantity + ", " + invoiceDate + ", " + unitPrice + ", "
                                 + customerID + ", " + country;
                 System.out.println(output);
+                //set the flag to false as first line has been printed
                 flag = false;
+            //format the data so that it is in the correct data format
              } else {
                 int invoiceNo = convertToInt(rs.getString("InvoiceNo"));
                 String stockCode = rs.getString("StockCode");
@@ -57,10 +60,12 @@ public class PrintWriter {
         statement = connection.createStatement();
         ResultSet rs = statement.executeQuery(query);
 
+        //counter to store the number of invoices
 		int counter = 0;
 		String previousInvoiceNo = "";
 		while (rs.next()) {
 			String invoiceNo = rs.getString("InvoiceNo");
+            //stores first previous inoivce to the current invoice
 			if (previousInvoiceNo.equals("")) {
 				previousInvoiceNo = invoiceNo;
 			}
@@ -82,10 +87,13 @@ public class PrintWriter {
 		ResultSet rs = statement.executeQuery(query);
 
         String previousInvoiceNo = "";
-        boolean flag = true;
         double total = 0;
+
+        //boolean flag used to print out the first line
+        boolean flag = true;
 		while (rs.next()) {
             String invoiceNo = rs.getString("InvoiceNo");
+            //printing out the first line
             if (flag) {
                 System.out.println(invoiceNo + ", " + "Total Price");
                 flag = false;
