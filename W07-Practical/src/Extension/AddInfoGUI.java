@@ -118,26 +118,25 @@ public class AddInfoGUI extends JPanel implements ActionListener {
             String insertValuesSQL = "INSERT INTO data"
                 + "(InvoiceNo, StockCode, Description, Quantity, InvoiceDate, UnitPrice, CustomerID, Country)"
                 + " VALUES (?,?,?,?,?,?,?,?);";
+            String[] newInformation = {newInvoiceNo.getText(), newStockCode.getText(), newDescription.getText(), newQuantity.getText(),
+                                        newInvoiceDate.getText(), newUnitPrice.getText(), newCustomerID.getText(), newCountry.getText()};
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(insertValuesSQL);
-                preparedStatement.setString(1, newInvoiceNo.getText());
-                preparedStatement.setString(2, newStockCode.getText());
-                preparedStatement.setString(3, newDescription.getText());
-                preparedStatement.setString(4, newQuantity.getText());
-                preparedStatement.setString(5, newInvoiceDate.getText());
-                preparedStatement.setString(6, newUnitPrice.getText());
-                preparedStatement.setString(7, newCustomerID.getText());
-                preparedStatement.setString(8, newCountry.getText());
+                for (int i = 1; i < 9; i++) {
+                    if (!newInformation[i - 1].equals("")) {
+                        preparedStatement.setString(i, newInformation[i - 1]);
+                    } else {
+                        throw new NullPointerException();
+                    }
+                    
+                }
                 preparedStatement.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Information added. Please Press the update button.", "Success", JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Information added. Please sress the refresh button.", "Success", JOptionPane.PLAIN_MESSAGE);
             } catch (SQLException e) {
-                JOptionPane.showMessageDialog(null, "Invalid SQL please try again.", "SQL Error", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Invalid SQL, please try again.", "SQL Error", JOptionPane.WARNING_MESSAGE);
             } catch (NullPointerException e) {
-                JOptionPane.showMessageDialog(null, "Fields cannot be left null.", "Null Pointer Exception", JOptionPane.WARNING_MESSAGE);
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Empty values not allowed, please try again", "Empty Value Error", JOptionPane.WARNING_MESSAGE);
             }
-
         }
     }
-
 }

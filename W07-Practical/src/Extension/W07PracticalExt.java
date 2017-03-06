@@ -18,13 +18,11 @@ public class W07PracticalExt extends JPanel implements ActionListener {
 
     private JLabel invoiceNoText;
     private JTextField invoiceNoSearch;
-    private JButton launchSearch;
-    private JButton launchAdd;
-    private JButton launchUpdate;
+    private JButton launchSearch, launchRefresh, launchAdd, launchTotalPrice;
     private JTable table;
     private static JFrame gui;
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
 
         try {
             PropertyLoader pl = new PropertyLoader(args[PROPERTIES_PATH]);
@@ -49,6 +47,9 @@ public class W07PracticalExt extends JPanel implements ActionListener {
             } else {
                 System.out.println("Usage: java -cp <mariadb-client.jar>:. W07Practical <DB_properties_file> <input_file>");
             }
+        } catch (ArrayIndexOutOfBoundsException e ){
+            System.out.println("Usage: java -cp <mariadb-client.jar>:. W07Practical <DB_properties_file> <input_file>");
+            e.printStackTrace();
         } catch (IOException e) {
             System.out.println("Usage: java -cp <mariadb-client.jar>:. W07Practical <DB_properties_file> <input_file>");
             e.printStackTrace();
@@ -59,56 +60,60 @@ public class W07PracticalExt extends JPanel implements ActionListener {
     }
 
     //this method creates and displays the GUI
-    private static void createAndShowGUI() {
+    public static void createAndShowGUI() {
+        try {
+            gui = new JFrame("W07PracticalExt");
+            gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            gui.setSize(GUI_WIDTH, GUI_HEIGHT);
 
-        gui = new JFrame("W07PracticalExt");
-        gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        gui.setSize(GUI_WIDTH, GUI_HEIGHT);
+            JComponent contentPane = new W07PracticalExt();
+            contentPane.setOpaque(true);
+            gui.setContentPane(contentPane);
 
-        JComponent contentPane = new W07PracticalExt();
-        contentPane.setOpaque(true);
-        gui.setContentPane(contentPane);
+            gui.setTitle("W07 Practical Extension");
+            gui.setVisible(true);
+        } catch (SQLException e) {
+            System.out.println("Usage: java -cp <mariadb-client.jar>:. W07Practical <DB_properties_file> <input_file>");
+            e.printStackTrace();       
+        }
 
-        gui.setTitle("W07 Practical Extension");
-        gui.setVisible(true);
     }
 
     //constructor which constructs the various aspects of the gui
-    public W07PracticalExt() {
+    public W07PracticalExt() throws SQLException{
         super(new BorderLayout());
 
         //create Jbutton to launch search
         launchSearch = new JButton("Search");
-        launchSearch.setActionCommand("SEARCH");
         launchSearch.addActionListener(this);
 
         //create jbutton to launch add
         launchAdd = new JButton("Add");
-        launchAdd.setActionCommand("ADD");
         launchAdd.addActionListener(this);
 
-        //create update button
-        launchUpdate = new JButton("Update");
-        launchUpdate.setActionCommand("UPDATE");
-        launchUpdate.addActionListener(this);
+        //create Refresh button
+        launchRefresh = new JButton("Refresh");
+        launchRefresh.addActionListener(this);
+
+        //create compress view button
+        launchTotalPrice = new JButton("Total Price");
+        launchTotalPrice.addActionListener(this);
 
         //add table object to the gui
-        try {
-            Statement statement = null;
-            String query = "SELECT * FROM data";
-            statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery(query);
-            DefaultTableModel model = buildTableModel(rs);
-            table = new JTable(model);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        Statement statement = null;
+        String query = "SELECT * FROM data";
+        statement = connection.createStatement();
+        ResultSet rs = statement.executeQuery(query);
+        DefaultTableModel model = buildTableModel(rs);
+        table = new JTable(model);
+
 
         //create jpanel to put everything on
         JPanel panel = new JPanel();
         panel.add(launchAdd);
         panel.add(launchSearch);
-        panel.add(launchUpdate);
+        panel.add(launchRefresh);
+        panel.add(launchTotalPrice);
 
         //add the panel to the gui
         add(panel, BorderLayout.PAGE_START);
@@ -121,29 +126,60 @@ public class W07PracticalExt extends JPanel implements ActionListener {
     //this method detects the action event the user performs and launches the relevant task
     public void actionPerformed(ActionEvent event) {
 
+        //if the add button is pressed
         if (event.getSource() == launchAdd) {
             AddInfoGUI aig = new AddInfoGUI(connection);
+
+        //if the search button is pressed
         } else if (event.getSource() == launchSearch) {
+            String column = "";
+            String value = "";
             String[] possibilities = {"InvoiceNo" , "StockCode", "CustomerID", "Country"};
-            String column = (String)JOptionPane.showInputDialog(null, "Choose column to filter by:", "Choose column", JOptionPane.PLAIN_MESSAGE, null, possibilities, "InvoiceNo");
-            String value = (String)JOptionPane.showInputDialog(null, "Enter a(n) " + column + " value:", "Choose value", JOptionPane.PLAIN_MESSAGE);
-            String query = "SELECT * FROM data WHERE " + column + " LIKE " + value + ";";
+            column = (String)JOptionPane.showInputDialog(null, "Choose column to filter by:", "Choose column", JOptionPane.PLAIN_MESSAGE, null, possibilities, "InvoiceNo");
+
             try {
-                Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery(query);
+                if (column != null) {
+                    value = (String)JOptionPane.showInputDialog(null, "Enter a(n) " + column + " value:", "Choose value", JOptionPane.PLAIN_MESSAGE);
+                    if (value == null) {
+                        return;
+                    } else if (value.equals("")) {
+                        throw new NullPointerException();
+                    }
+                } else {
+                    return;
+                }
+
+                //Query to search for specific terms
+                String query = "";
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM data WHERE " + column + " = ?");
+                statement.setString(1, value);
+                ResultSet rs = statement.executeQuery();
                 table.setModel(buildTableModel(rs));
             } catch (SQLException e) {
-                JOptionPane.showMessageDialog(null, "Invalid SQL please try again.", "SQL Error", JOptionPane.WARNING_MESSAGE);
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Invalid SQL, please try again.", "SQL Error", JOptionPane.WARNING_MESSAGE);
+            } catch (NullPointerException e) {
+                JOptionPane.showMessageDialog(null, "Invalid input, please try again.", "Null Value Error", JOptionPane.WARNING_MESSAGE);
             }
-        } else if (event.getSource() == launchUpdate) {
-            try {
-                String query = "SELECT * FROM data";
+
+        //if the compress button is pressed
+        } else if (event.getSource() == launchTotalPrice) {
+             try {
+                String query = "SELECT InvoiceNo, CustomerID, Country, Quantity, UnitPrice FROM data ORDER BY InvoiceNo";
                 Statement statement = connection.createStatement();
                 ResultSet rs = statement.executeQuery(query);
+                table.setModel(customTableModel(rs));
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Invalid SQL, please try again.", "SQL Error", JOptionPane.WARNING_MESSAGE);
+            }
+
+        //if the Refresh button is pressed
+        } else if (event.getSource() == launchRefresh) {
+            try {
+                Statement statement = connection.createStatement();
+                ResultSet rs = statement.executeQuery("SELECT * FROM data ORDER BY InvoiceNo");
                 table.setModel(buildTableModel(rs));
             } catch (SQLException e) {
-                JOptionPane.showMessageDialog(null, "Invalid SQL please try again.", "SQL Error", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Invalid SQL, please try again.", "SQL Error", JOptionPane.WARNING_MESSAGE);
             }
 
         }
@@ -174,6 +210,73 @@ public class W07PracticalExt extends JPanel implements ActionListener {
 
     }
 
+    //method which populates the JTable to show only the invoice, customer id, country and total invoice price
+    private static DefaultTableModel customTableModel(ResultSet rs) throws SQLException {
+        ResultSetMetaData metaData = rs.getMetaData();
+        
+        // names of columns
+        Vector<String> columnNames = new Vector<String>();
+        for (int column = 1; column <= 3; column++) {
+            columnNames.add(metaData.getColumnName(column));
+        }
+        columnNames.add("Total Price");
+        
+        // data of the table
+        Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+        String previousInvoice = "";
+        String previousCountry = "";
+        String previousCustomerID = "";
+        double total = 0;
+        boolean flag = true;
+        while (rs.next()) {
+            Vector<Object> vector = new Vector<Object>();
+            //flag for the initial previous invoice
+            if (flag) {
+                previousInvoice = rs.getString("InvoiceNo");
+                previousCustomerID = rs.getString("CustomerID");
+                previousCountry = rs.getString("Country");
+                flag = false;
+            } else {
+                if (rs.getString("InvoiceNo").equals(previousInvoice)) {
+                    total = total + calculateCost(convertToInt(rs.getString("Quantity")), convertToDouble(rs.getString("UnitPrice")));
+                    //check if the current position in the result set is at the bottom
+                    if (rs.isLast()) {
+                        vector.add(rs.getString("InvoiceNo"));
+                        vector.add(rs.getString("CustomerID"));
+                        vector.add(rs.getString("Country"));
+                        vector.add(total);
+                        data.add(vector);
+                    }
+                } else {
+                    vector.add(previousInvoice);
+                    vector.add(previousCustomerID);
+                    vector.add(previousCountry);
+                    vector.add(total);
+                    total = 0;
+                    data.add(vector);
+                    //check if the current position in the result set is at the bottom
+                    if (rs.isLast()) {
+                        vector = new Vector<Object>();
+                        vector.add(rs.getString("InvoiceNo"));
+                        vector.add(rs.getString("CustomerID"));
+                        vector.add(rs.getString("Country"));
+                        total = total + calculateCost(convertToInt(rs.getString("Quantity")), convertToDouble(rs.getString("UnitPrice")));
+                        vector.add(total);
+                        data.add(vector);
+                    } else {
+                        previousInvoice = rs.getString("InvoiceNo");
+                        previousCustomerID = rs.getString("CustomerID");
+                        previousCountry = rs.getString("Country");
+                        total = total + calculateCost(convertToInt(rs.getString("Quantity")), convertToDouble(rs.getString("UnitPrice")));
+                    }
+                }
+            }
+        }
+
+        return new DefaultTableModel(data, columnNames);
+
+    }
+
     //method which creates the table to store the csv, code adapted from studres
     private static void createTable(Connection connection) throws SQLException {
 		//delete the table if it already exists
@@ -187,4 +290,34 @@ public class W07PracticalExt extends JPanel implements ActionListener {
 		statement.executeUpdate(tableCreation);
 		statement.close();
 	}
+
+    //method which converts string into int
+    private static int convertToInt(String s) {
+        int number = 0;
+
+        try {
+            number = Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return number;
+    }
+
+    //method which converts string to a double
+    private static double convertToDouble(String s) {
+        double number = 0.0;
+
+        try {
+            number = Double.parseDouble(s);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return number;
+    }
+
+    //method which calcu
+    private static double calculateCost(int quantity, double unitPrice) throws SQLException{
+        double total = quantity * unitPrice;
+        return total;
+    }
 }
