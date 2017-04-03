@@ -9,7 +9,6 @@ import java.util.Vector;
 
 public class W07PracticalExt extends JPanel implements ActionListener {
 
-    private static Connection connection;
     private static final int GUI_WIDTH = 1100;
     private static final int GUI_HEIGHT = 600;
     private static final int PROPERTIES_PATH = 0;
@@ -21,35 +20,35 @@ public class W07PracticalExt extends JPanel implements ActionListener {
     private JButton launchSearch, launchRefresh, launchAdd, launchTotalPrice;
     private JTable table;
     private static JFrame gui;
+    private static Connection connection;
 
     public static void main(String[] args) {
 
         try {
+            //check the args length
+            if (args.length < 1 || args.length > NUMBER_OF_ARGS) {
+                System.out.println("Usage: java -cp <mariadb-client.jar>:. W07Practical <DB_properties_file> <input_file>");
+                System.exit(0);
+            }
+
+            //Load the property files
             PropertyLoader pl = new PropertyLoader(args[PROPERTIES_PATH]);
             connection = DriverManager.getConnection(pl.getDBUrl(), pl.getUserName(), pl.getPassword());
-            //if the args contains only the properties file, do not create new table
-            if (args.length == 1) {
-                javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        createAndShowGUI();
-                    }
-                });
-            //if the args contains both properties file and csv, create a new table
-            } else if (args.length == NUMBER_OF_ARGS) {
+
+            //if there are 2 arguments, load the CSV file into the database
+            if (args.length == NUMBER_OF_ARGS) {
                 createTable(connection);
                 CSVLoader csvLoader = new CSVLoader(connection, args[CSV_PATH]);
-                csvLoader.loadCSVData();
-                javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        createAndShowGUI();
-                    }
-                });  
-            } else {
-                System.out.println("Usage: java -cp <mariadb-client.jar>:. W07Practical <DB_properties_file> <input_file>");
+                csvLoader.loadCSVData(); 
             }
-        } catch (ArrayIndexOutOfBoundsException e ){
-            System.out.println("Usage: java -cp <mariadb-client.jar>:. W07Practical <DB_properties_file> <input_file>");
-            e.printStackTrace();
+
+            //run and show the GUI
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    createAndShowGUI();
+                }
+            });
+
         } catch (IOException e) {
             System.out.println("Usage: java -cp <mariadb-client.jar>:. W07Practical <DB_properties_file> <input_file>");
             e.printStackTrace();
@@ -128,6 +127,7 @@ public class W07PracticalExt extends JPanel implements ActionListener {
 
         //if the add button is pressed
         if (event.getSource() == launchAdd) {
+            //create new instance of the AddInfoGUI
             AddInfoGUI aig = new AddInfoGUI(connection);
 
         //if the search button is pressed
@@ -137,11 +137,15 @@ public class W07PracticalExt extends JPanel implements ActionListener {
             String[] possibilities = {"InvoiceNo" , "StockCode", "CustomerID", "Country"};
             column = (String)JOptionPane.showInputDialog(null, "Choose column to filter by:", "Choose column", JOptionPane.PLAIN_MESSAGE, null, possibilities, "InvoiceNo");
 
+            //check what the user inputs
             try {
+                //if the user presses cancel or exit, return
                 if (column != null) {
                     value = (String)JOptionPane.showInputDialog(null, "Enter a(n) " + column + " value:", "Choose value", JOptionPane.PLAIN_MESSAGE);
+                    //user presses cancel or exit
                     if (value == null) {
                         return;
+                    //user enters nothing throw new NullPointerException
                     } else if (value.equals("")) {
                         throw new NullPointerException();
                     }
@@ -149,7 +153,7 @@ public class W07PracticalExt extends JPanel implements ActionListener {
                     return;
                 }
 
-                //Query to search for specific terms
+                //query to search for specific terms
                 String query = "";
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM data WHERE " + column + " = ?");
                 statement.setString(1, value);
@@ -164,9 +168,11 @@ public class W07PracticalExt extends JPanel implements ActionListener {
         //if the compress button is pressed
         } else if (event.getSource() == launchTotalPrice) {
              try {
+                //query which displays a JTable sorted by InvoiceNo
                 String query = "SELECT InvoiceNo, CustomerID, Country, Quantity, UnitPrice FROM data ORDER BY InvoiceNo";
                 Statement statement = connection.createStatement();
                 ResultSet rs = statement.executeQuery(query);
+                //create and display the new table
                 table.setModel(customTableModel(rs));
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, "Invalid SQL, please try again.", "SQL Error", JOptionPane.WARNING_MESSAGE);
@@ -175,8 +181,10 @@ public class W07PracticalExt extends JPanel implements ActionListener {
         //if the Refresh button is pressed
         } else if (event.getSource() == launchRefresh) {
             try {
+                //query which displays a JTable sorted by InvoiceNo
                 Statement statement = connection.createStatement();
                 ResultSet rs = statement.executeQuery("SELECT * FROM data ORDER BY InvoiceNo");
+                //create and display the new table
                 table.setModel(buildTableModel(rs));
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, "Invalid SQL, please try again.", "SQL Error", JOptionPane.WARNING_MESSAGE);
@@ -315,7 +323,7 @@ public class W07PracticalExt extends JPanel implements ActionListener {
         return number;
     }
 
-    //method which calcu
+    //method which calculates the price
     private static double calculateCost(int quantity, double unitPrice) throws SQLException{
         double total = quantity * unitPrice;
         return total;

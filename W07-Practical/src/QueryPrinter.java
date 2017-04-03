@@ -1,13 +1,14 @@
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
-public class PrintWriter {
+public class QueryPrinter {
 
     private static Connection connection;
 
-    public PrintWriter(Connection connection) {
+    //constructor for QueryPrinter
+    public QueryPrinter(Connection connection) {
         this.connection = connection;
     }
 
@@ -53,6 +54,7 @@ public class PrintWriter {
              }
         }
     }
+
     //method which prints out the total number of invoices
     public void printNoOfInvoices() throws SQLException {
         Statement statement = null;
@@ -63,19 +65,21 @@ public class PrintWriter {
         //counter to store the number of invoices
 		int counter = 0;
 		String previousInvoiceNo = "";
+
 		while (rs.next()) {
 			String invoiceNo = rs.getString("InvoiceNo");
             //stores first previous inoivce to the current invoice
 			if (previousInvoiceNo.equals("")) {
 				previousInvoiceNo = invoiceNo;
 			}
-
-			if (!previousInvoiceNo.equals(invoiceNo)) {
+            //increment the counter if the current invoice number does not match the previous invoice number
+			if (!invoiceNo.equals(previousInvoiceNo)) {
 				counter++;
 				previousInvoiceNo = invoiceNo;
 			}
 		}
 
+        //print out the number of invoices
 		System.out.println("Number of Invoices\n" + counter);
 	}
 
@@ -98,17 +102,22 @@ public class PrintWriter {
                 System.out.println(invoiceNo + ", " + "Total Price");
                 flag = false;
             } else {
+                //set the previous invoice number to the current invoice number
                 if (previousInvoiceNo.equals("")) {
                     previousInvoiceNo = invoiceNo;
                 }
-                if (!previousInvoiceNo.equals(invoiceNo)) {
-                    System.out.println(previousInvoiceNo + ", " + total);
-                    previousInvoiceNo = invoiceNo;
-                    total = 0;
+                //calculate the total price for the current invoice
+                if (invoiceNo.equals(previousInvoiceNo)) {
                     int quantity = convertToInt(rs.getString("Quantity"));
                     double unitPrice = convertToDouble(rs.getString("UnitPrice"));
                     total = total + quantity * unitPrice;
+                //print out the previous invoice number and total if the current invoice number and previous invoice number do not match 
                 } else {
+                    System.out.println(previousInvoiceNo + ", " + total);
+                    previousInvoiceNo = invoiceNo;
+                    //reset the total
+                    total = 0;
+                    //calculate the new invoice total
                     int quantity = convertToInt(rs.getString("Quantity"));
                     double unitPrice = convertToDouble(rs.getString("UnitPrice"));
                     total = total + quantity * unitPrice;
@@ -119,7 +128,7 @@ public class PrintWriter {
         System.out.println(previousInvoiceNo + ", " + total);
 	}
 
-	//method which prints out the highest invocie
+	//method which prints out the highest invoice
 	public void printOutHighestInvoice() throws SQLException {
 		Statement statement = null;
     	String query = "SELECT InvoiceNo, Quantity, UnitPrice FROM data";
@@ -128,29 +137,40 @@ public class PrintWriter {
 
         String previousInvoiceNo = "";
         String highestInvoice = "";
-        double total = 0.0;
+        double total = 0;
         double highestPrice = 0;
         boolean flag = true;
+
+
 		while (rs.next()) {
             String invoiceNo = rs.getString("InvoiceNo");
+            //boolean flag to print out the first line
             if (flag) {
                 System.out.println(invoiceNo + ", " + "Maximum Total Price");
+                //set flag to false as the first line has been printed
                 flag = false;
             } else {
+                //set the previous invoice number to the current invoice number
                 if (previousInvoiceNo.equals("")) {
                     previousInvoiceNo = invoiceNo;
                 }
-                if (!previousInvoiceNo.equals(invoiceNo)) {
+                //if the current invoice and previous invoice match, calculate total
+                if (invoiceNo.equals(previousInvoiceNo)) {
+                    int quantity = convertToInt(rs.getString("Quantity"));
+                    double unitPrice = convertToDouble(rs.getString("UnitPrice"));
+                    total = total + quantity * unitPrice;
+                    //current invoice number and previous invoice number do not match
+                } else {
+                    //check if the previous total is larger than the highest price
                     if (total > highestPrice) {
                         highestInvoice = previousInvoiceNo;
                         highestPrice = total;
                     }
+                    //set the previous invoice number to the current invoice number
                     previousInvoiceNo = invoiceNo;
+                    //reset the total
                     total = 0;
-                    int quantity = convertToInt(rs.getString("Quantity"));
-                    double unitPrice = convertToDouble(rs.getString("UnitPrice"));
-                    total = total + quantity * unitPrice;
-                } else {
+                    //calculate the total for this invoice
                     int quantity = convertToInt(rs.getString("Quantity"));
                     double unitPrice = convertToDouble(rs.getString("UnitPrice"));
                     total = total + quantity * unitPrice;
@@ -158,6 +178,7 @@ public class PrintWriter {
             }
         }
 
+        //last comparison
         if (total > highestPrice) {
             highestInvoice = previousInvoiceNo;
             highestPrice = total;
@@ -179,7 +200,7 @@ public class PrintWriter {
 
     //method which converts string to a double
     private double convertToDouble(String s) {
-        double number = 0.0;
+        double number = 0;
 
         try {
             number = Double.parseDouble(s);

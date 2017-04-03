@@ -26,23 +26,22 @@ public class CSVLoader {
         + " VALUES (?,?,?,?,?,?,?,?);";
 
         //code to read csv file taken from W03 practical
-         BufferedReader br = new BufferedReader(new FileReader(filePath));
-            String line = br.readLine();
-            String[] informationArray;
-            while (line != null) {
-                informationArray = line.split(",");
-                PreparedStatement preparedStatement = connection.prepareStatement(insertvaluesSQL);
-                //the first '?' corresponds to the 0th term in the information array
-                //the second '?' corresponds to the 1st term in the information array
-                for (int i = 1; i < 9; i++) {
-                    preparedStatement.setString(i, informationArray[i - 1]);
-                }
-                preparedStatement.executeUpdate();
-                line = br.readLine();
+        BufferedReader br = new BufferedReader(new FileReader(filePath));
+        String line = br.readLine();
+        String[] informationArray;
+        while (line != null) {
+            informationArray = line.split(",");
+            PreparedStatement preparedStatement = connection.prepareStatement(insertvaluesSQL);
+            //the first '?' corresponds to the 0th term in the information array
+            //the second '?' corresponds to the 1st term in the information array
+            for (int i = 1; i < 9; i++) {
+                preparedStatement.setString(i, informationArray[i - 1]);
             }
-            Statement statement = connection.createStatement();
-            statement.executeUpdate("DELETE FROM data WHERE InvoiceNo = 'InvoiceNo';");
-            statement.close();
+            preparedStatement.executeUpdate();
+            line = br.readLine();
+        }
+        Statement statement = connection.createStatement();
+        statement.executeUpdate("DELETE FROM data WHERE InvoiceNo = 'InvoiceNo';");
+        statement.close();
     }
-
 }

@@ -7,7 +7,7 @@ public class PropertyLoader {
     private Properties properties;
 
     private String dbURL;
-    private String userName;
+    private String username;
     private String password;
 
     //constructor for PropertyLoader
@@ -36,7 +36,7 @@ public class PropertyLoader {
 
     //method which sets the username for the connection, code is adapted from studres
     private void setUserName() throws IOException {
-        this.userName = properties.getProperty("username");
+        this.username = properties.getProperty("username");
     }
 
     //method which sets the password for the connection, code is adapted from studres
@@ -51,7 +51,7 @@ public class PropertyLoader {
 
     //method which returns username
     public String getUserName() {
-        return userName;
+        return username;
     }
 
     //method which returns password

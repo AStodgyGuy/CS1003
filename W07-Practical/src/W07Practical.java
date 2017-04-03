@@ -6,13 +6,14 @@ import java.sql.Statement;
 
 public class W07Practical {
 
-	private static Connection JDBC_CONNECTION = null;
 	private static final int PROPERTIES_PATH = 0;
 	private static final int CSV_PATH = 1;
 	private static final int ACTION_TAKEN = 2;
 	private static final int NUMBER_OF_ARGS = 3;
 
 	public static void main(String[] args) throws IOException, SQLException {
+
+		Connection jdbcConnection;
 
 		//check that the length of args is correct
 		if (args.length != NUMBER_OF_ARGS) {
@@ -22,34 +23,34 @@ public class W07Practical {
 		//switch action to be taken
 		try {
 			W07Practical myDB = new W07Practical();
-			myDB.tryToAccessDB(args[PROPERTIES_PATH]);
-			PrintWriter pw = new PrintWriter(JDBC_CONNECTION);
+			jdbcConnection = myDB.tryToAccessDB(args[PROPERTIES_PATH]);
+			QueryPrinter qp = new QueryPrinter(jdbcConnection);
 			switch (args[ACTION_TAKEN]) {
 				case "create":
 					//create the table
-					createTable(JDBC_CONNECTION);
-					CSVLoader loader = new CSVLoader(JDBC_CONNECTION, args[CSV_PATH]);
+					createTable(jdbcConnection);
+					CSVLoader loader = new CSVLoader(jdbcConnection, args[CSV_PATH]);
 					loader.loadCSVData();
 					System.out.println("OK");
 					break;
 				case "query1":
 					//list all the records in the database
-					pw.printAllRecords();
+					qp.printAllRecords();
 					break;
 				case "query2":
 					//print out the total number of invoices in the database
-					pw.printNoOfInvoices();
+					qp.printNoOfInvoices();
 					break;
 				case "query3":
 					//list the invoice number and total price for each invoice
-					pw.printInvoiceNoAndTotalPrice();
+					qp.printInvoiceNoAndTotalPrice();
 					break;
 				case "query4":
 					//print the invoice number and total price for the invoice with the highest total price
-					pw.printOutHighestInvoice();
+					qp.printOutHighestInvoice();
 					break;
 				default:
-					System.out.println("Usage: java -cp <mariadb-client.jar>:. W07Practical <DB_properties_file> <input_file> <action>");
+					System.out.println("Command does not exist! Commands are: create, query1, query2, query3 and query4");
 			}
 
 		} catch (IOException e) {
@@ -63,13 +64,13 @@ public class W07Practical {
 	}
 
 	//method which tries to connect to a database, code adapted from studres
-	private static void tryToAccessDB(String propertiesLocation) throws IOException, SQLException {
+	private static Connection tryToAccessDB(String propertiesLocation) throws IOException, SQLException {
 		Connection connection = null;
 		//load the properties file
 		PropertyLoader pl = new PropertyLoader(propertiesLocation);
 		connection = DriverManager.getConnection(pl.getDBUrl(), pl.getUserName(), pl.getPassword());
-		//set the connection variable to the current connection
-		JDBC_CONNECTION = connection;
+		//return the connection
+		return connection;
 	}
 
 	//method which creates the table to store the csv, code adapted from studres
