@@ -1,12 +1,23 @@
-import javax.json.JsonReader;
-import javax.json.JsonObject;
-import javacx.json.JsonArray;
-
+import java.io.IOException;
+import javax.json.stream.JsonParsingException;
 
 public class Describe {
     public static void main(String[] args) {
-        //obtain the json file
-        //process the json file
-        //display the json file summary to the user
+
+        if (args.length != 1) {
+            System.out.println("Usage: java -cp .:javax.json-1.0.jar Describe file.json");
+            System.exit(0);
+        } else {
+            try {
+                JsonFileReader jfr = new JsonFileReader(args[0]);
+                jfr.printSummary();
+            } catch (IOException e) {
+                System.out.println("404 Error, File not found");
+            } catch (JsonParsingException e) {
+                System.out.println("Not a valid JSON string!");
+            }
+        }
+
+
     }
 }
