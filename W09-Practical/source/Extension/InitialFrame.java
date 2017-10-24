@@ -24,11 +24,15 @@ public class InitialFrame extends JFrame implements ActionListener {
     private JTextField userText;
     private JButton searchButton, inputFile;
 
+    //constructor for InitialFrame
     public InitialFrame() {
         createAndShowGUI();
     }
 
+    //method which adds all the components to the frame and shows the frame
     public void createAndShowGUI() {
+
+        //frame settings
         setTitle("W09PracticalExt");
         setResizable(false);
         setSize(GUI_WIDTH, GUI_HEIGHT);
@@ -120,7 +124,7 @@ public class InitialFrame extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Not valid .json file, please try again. ", "Unsupported json file" , JOptionPane.WARNING_MESSAGE);
             }
 
-
+        //user clicks search button
         } else if (event.getSource() == searchButton) {
             try {
                 //display error message when the user tries to search for nothing
@@ -146,7 +150,7 @@ public class InitialFrame extends JFrame implements ActionListener {
         }
     }
 
-    //displays the html in a pane
+    //displays panel once the user clicks search
     private void displayResultFrame(JsonObject json) throws NullPointerException {
 
         //removes all current components on the frame
@@ -166,6 +170,7 @@ public class InitialFrame extends JFrame implements ActionListener {
         String htmlTitle = "<html><font color=#4885ed>W</font><font color=#db3236>0</font><font color=#f4c20d>9</font><font color=#4885ed>E</font><font color=#3cba54>x</font><font color=#db3236>t</font>";
         titleLabel = new JLabel(htmlTitle);
         titleLabel.setFont(new Font("Futura", Font.PLAIN, 35));
+        //when user clicks on the label, this will return back to the initial state
         titleLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
